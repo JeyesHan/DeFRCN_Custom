@@ -42,7 +42,7 @@ if __name__ == '__main__':
         config_file="configs/voc/robot_competition.yaml",
         model_weights="checkpoints/voc/robot_competition_more/defrcn_fsod_r101_novel/fsrw-like/10shot_seed0_repeat0/model_final.pth",
     )
-    img_path = '/home/hanj/pyprojects/robot_competition/JPEGImages/97562.jpg'
+    img_path = '97562.jpg'
     im = cv2.imread(img_path)
     outputs = fsod_detector.inference(im)
     print(outputs)
