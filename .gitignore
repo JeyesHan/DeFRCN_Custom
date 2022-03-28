@@ -38,3 +38,5 @@ datasets/VOC2007
 datasets/VOC2012
 datasets/vocsplit
 demo
+*.mp4
+output_video
