@@ -1,5 +1,5 @@
 import os
-from .meta_voc import register_meta_voc
+from .meta_voc import register_meta_voc, load_filtered_voc_instances
 from .meta_coco import register_meta_coco
 from .builtin_meta import _get_builtin_metadata
 from detectron2.data import DatasetCatalog, MetadataCatalog
@@ -94,3 +94,26 @@ def register_all_voc(root="datasets"):
 
 register_all_coco()
 register_all_voc()
+
+
+# register custom dataset
+def register_custom(name, dirname, split, year, thing_classes):
+    DatasetCatalog.register(
+        name,
+        lambda: load_filtered_voc_instances(
+            name, dirname, split, thing_classes
+        ),
+    )
+
+    MetadataCatalog.get(name).set(
+        thing_classes=thing_classes,
+        dirname=dirname,
+        year=year,
+        split=split,
+        evaluator_type = "pascal_voc",
+        base_classes=thing_classes,
+        novel_classes=[],
+    )
+
+register_custom("robot_competition_voc_trainval", "/home/hanj/pyprojects/robot_competition", "trainval", 2007, ['book', 'white bottle', 'purple bottle', 'biscuit', 'thermometer'])
+register_custom("robot_competition_voc_test", "/home/hanj/pyprojects/robot_competition", "test", 2007, ['book', 'white bottle', 'purple bottle', 'biscuit', 'thermometer'])
