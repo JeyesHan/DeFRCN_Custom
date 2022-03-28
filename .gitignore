@@ -40,3 +40,5 @@ datasets/vocsplit
 demo
 *.mp4
 output_video
+output
+
