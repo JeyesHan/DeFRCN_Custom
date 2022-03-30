@@ -95,7 +95,7 @@ class PascalVOCDetectionEvaluator(DatasetEvaluator):
                     f.write("\n".join(lines))
 
                 for thresh in range(50, 100, 5):
-                    rec, prec, ap = voc_eval(
+                    rec, prec, ap, npos = voc_eval(
                         res_file_template,
                         self._anno_file_template,
                         self._image_set_path,
@@ -104,6 +104,9 @@ class PascalVOCDetectionEvaluator(DatasetEvaluator):
                         use_07_metric=self._is_2007,
                     )
                     aps[thresh].append(ap * 100)
+                    if thresh == 50:
+                        print(len(rec), len(prec))
+                        print(cls_id, cls_name, thresh, rec, npos, prec, ap)
 
                     if self._base_classes is not None and cls_name in self._base_classes:
                         aps_base[thresh].append(ap * 100)
@@ -321,4 +324,4 @@ def voc_eval(detpath, annopath, imagesetfile, classname, ovthresh=0.5, use_07_me
     prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
     ap = voc_ap(rec, prec, use_07_metric)
 
-    return rec, prec, ap
+    return rec, prec, ap, npos

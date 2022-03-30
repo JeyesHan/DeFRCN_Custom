@@ -115,5 +115,9 @@ def register_custom(name, dirname, split, year, thing_classes):
         novel_classes=[],
     )
 
-register_custom("robot_competition_voc_trainval", "/home/hanj/pyprojects/robot_competition", "trainval", 2007, ['purple bottle', 'biscuit', 'apple'])
-register_custom("robot_competition_voc_test", "/home/hanj/pyprojects/robot_competition", "test", 2007, ['purple bottle', 'biscuit', 'apple'])
+# register_custom("robot_competition_voc_trainval", "/home/hanj/pyprojects/robot_competition", "trainval", 2007, ['purple bottle', 'biscuit', 'apple'])
+# register_custom("robot_competition_voc_test", "/home/hanj/pyprojects/robot_competition", "test", 2007, ['purple bottle', 'biscuit', 'apple'])
+
+register_custom("robot_competition_voc_trainval", "/home/hanj/pyprojects/robot_initial/stepx", "trainval", 2007, ['purple bottle', 'biscuit', 'apple'])
+register_custom("robot_competition_voc_test", "/home/hanj/pyprojects/robot_test", "test", 2007, ['purple bottle', 'biscuit', 'apple'])
+

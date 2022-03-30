@@ -21,7 +21,7 @@ from defrcn.config import get_cfg, set_global_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog, DatasetCatalog
 
-class FSOD():
+class FSOD:
     def __init__(self, config_file, model_weights, thresh=0.5, ):
         self.cfg = get_cfg()
         self.cfg.merge_from_file(config_file)
@@ -33,7 +33,7 @@ class FSOD():
         self,
         img: numpy.ndarray,
     ) -> dict:
-        outputs = self.predictor(im)
+        outputs = self.predictor(img)
         return outputs
 
 if __name__ == '__main__':
