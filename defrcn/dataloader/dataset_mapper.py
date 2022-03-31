@@ -79,6 +79,7 @@ class DatasetMapper:
     @classmethod
     def from_config(cls, cfg, is_train: bool = True):
         augs = utils.build_augmentation(cfg, is_train)
+        # import pdb; pdb.set_trace()
         if cfg.INPUT.CROP.ENABLED and is_train:
             augs.insert(0, T.RandomCrop(cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE))
             recompute_boxes = cfg.MODEL.MASK_ON

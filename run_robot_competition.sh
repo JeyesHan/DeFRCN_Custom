@@ -33,6 +33,11 @@ do
             python3 main.py --dist-url auto --num-gpus 8 --config-file ${CONFIG_PATH}                          \
                 --opts MODEL.WEIGHTS ${BASE_WEIGHT} OUTPUT_DIR ${OUTPUT_DIR}                   \
                        TEST.PCB_MODELPATH ${IMAGENET_PRETRAIN_TORCH}
+
+            # python3 main.py --dist-url auto --num-gpus 1 --config-file ${CONFIG_PATH}                          \
+            #     --opts MODEL.WEIGHTS ${BASE_WEIGHT} OUTPUT_DIR ${OUTPUT_DIR}                   \
+            #            TEST.PCB_MODELPATH ${IMAGENET_PRETRAIN_TORCH} DATALOADER.NUM_WORKERS 0 SOLVER.IMS_PER_BATCH 2 
+
             # rm ${CONFIG_PATH}
             # rm ${OUTPUT_DIR}/model_final.pth
         done

@@ -17,7 +17,7 @@ IMAGENET_PRETRAIN_TORCH=/home/hanj/pyprojects/DeFRCN/datasets/ImageNetPretrained
 #     --src-path ${SAVE_DIR}/defrcn_det_r101_base${SPLIT_ID}/model_final.pth                      \
 #     --save-dir ${SAVE_DIR}/defrcn_det_r101_base${SPLIT_ID}
 BASE_WEIGHT=$2
-
+SPLIT_ID=1
 # ------------------------------ Novel Fine-tuning -------------------------------- #
 # --> 1. FSRW-like, i.e. run seed0 10 times (the FSOD results on voc in most papers)
 for repeat_id in 0

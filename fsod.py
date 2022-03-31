@@ -12,6 +12,7 @@ import shutil
 import numpy
 import numpy as np
 import os, json, cv2, random
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 # import some common detectron2 utilities
@@ -21,6 +22,29 @@ from defrcn.config import get_cfg, set_global_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog, DatasetCatalog
 from detectron2.structures.instances import Instances
+from defrcn.evaluation.calibration_layer import PrototypicalCalibrationBlock
+
+class MyPCB(PrototypicalCalibrationBlock):
+    def __init__(self, cfg):
+        super().__init__(cfg)
+    
+    def execute_calibration(self, img, dts):
+        ileft = (dts[0]['instances'].scores > self.cfg.TEST.PCB_UPPER).sum()
+        iright = (dts[0]['instances'].scores > self.cfg.TEST.PCB_LOWER).sum()
+        assert ileft <= iright
+        boxes = [dts[0]['instances'].pred_boxes[ileft:iright]]
+
+        features = self.extract_roi_features(img, boxes)
+
+        for i in range(ileft, iright):
+            tmp_class = int(dts[0]['instances'].pred_classes[i])
+            if tmp_class in self.exclude_cls:
+                continue
+            tmp_cos = cosine_similarity(features[i - ileft].cpu().data.numpy().reshape((1, -1)),
+                                        self.prototypes[tmp_class].cpu().data.numpy())[0][0]
+            dts[0]['instances'].scores[i] = dts[0]['instances'].scores[i] * self.alpha + tmp_cos * (1 - self.alpha)
+        return dts
+
 
 class FSOD:
     def __init__(self, config_file, model_weights, thresh=0.5, ):
@@ -29,12 +53,17 @@ class FSOD:
         self.cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = thresh
         self.cfg.MODEL.WEIGHTS = model_weights
         self.predictor = DefaultPredictor(self.cfg)
+        if self.cfg.TEST.PCB_ENABLE:
+            print("Start initializing PCB module, please wait a seconds...")
+            self.pcb = MyPCB(self.cfg)
     
     def inference(
         self,
         img: numpy.ndarray,
     ) -> dict:
         outputs = self.predictor(img)
+        if self.cfg.TEST.PCB_ENABLE:
+            outputs = self.pcb.execute_calibration(img, [outputs])[0]
         return outputs
 
 
@@ -62,12 +91,14 @@ class FSOD_OS(FSOD):
     def object_search(self, outputs):
         scores = outputs["instances"].to("cpu").scores.numpy()
         classes = outputs["instances"].to("cpu").pred_classes.numpy()
+        instances = outputs["instances"].to("cpu")
+        if not len(scores):
+            return instances
         if self.object:
             scores[np.where(classes!=self.object_cid)] = 0
             preserve_index = np.argmax(scores)
         else:
             preserve_index = np.argmax(scores)
-        instances = outputs["instances"].to("cpu")
         instances.pred_boxes.tensor = instances.pred_boxes.tensor[preserve_index:preserve_index+1]
         instances.pred_classes = instances.pred_classes[preserve_index:preserve_index+1]
         instances.scores = instances.scores[preserve_index:preserve_index+1]
